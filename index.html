@@ -31,14 +31,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .wrap { max-width: 1440px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 64px; }
 @media (min-width: 720px) { .wrap { padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: max(40px, env(safe-area-inset-right, 0px)); } }
 
-/* 상단 메타 바 */
-.topbar { display: grid; grid-template-columns: 1fr auto; gap: 16px; padding-block: 20px; font-size: 12px; border-bottom: 1px solid var(--line); }
-.topbar .mid { display: none; }
-.topbar nav { display: flex; gap: 14px; }
-.topbar nav span { color: var(--muted); }
-.topbar nav .on { color: var(--ink); border-bottom: 1px solid var(--ink); padding-bottom: 2px; }
-@media (min-width: 720px) { .topbar { grid-template-columns: 1fr 1fr auto 1fr; } .topbar .mid { display: block; } .topbar .end { text-align: right; } }
-
 /* 본문 2단 */
 .layout { display: grid; gap: 32px; padding-top: 40px; }
 @media (min-width: 900px) { .layout { grid-template-columns: 280px minmax(0, 1fr); gap: 56px; } }
@@ -105,12 +97,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 </style>
 
 <div class="wrap">
-  <header class="topbar">
-    <a href="#all">OARO*</a>
-    <span class="mid">Web Maker</span>
-    <nav><span class="on">Index</span><span id="count-top"></span></nav>
-    <a class="end" href="https://github.com/shinggong" target="_blank" rel="noopener">github.com/shinggong</a>
-  </header>
 
   <div class="layout">
     <aside class="side">
@@ -191,7 +177,6 @@ function render() {
 
   const label = CATS.find(c => c.id === cat).label;
   $("#heading").innerHTML = `${cat === "all" ? "Selected Works" : label}<sup>(${list.length})</sup>`;
-  $("#count-top").textContent = `${PROJECTS.length} works`;
   $("#v-grid").setAttribute("aria-pressed", view === "grid");
   $("#v-list").setAttribute("aria-pressed", view === "list");
 
