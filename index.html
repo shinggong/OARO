@@ -12,15 +12,15 @@
   --ink: #161616;
   --muted: #9a9a96;
   --line: #e2e2de;
-  --accent: #ff3b5c;
+  --accent: #161616;
   --display: "Anton", "Noto Sans KR", Impact, sans-serif;
   --body: "Hanken Grotesk", "Noto Sans KR", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --bg: #121212; --paper: #1a1a1a; --ink: #f1f1ee; --muted: #77776f; --line: #2c2c2a; --accent: #ff5873; color-scheme: dark; }
+  :root:not([data-theme="light"]) { --bg: #121212; --paper: #1a1a1a; --ink: #f1f1ee; --muted: #77776f; --line: #2c2c2a; --accent: #f1f1ee; color-scheme: dark; }
 }
-:root[data-theme="dark"] { --bg: #121212; --paper: #1a1a1a; --ink: #f1f1ee; --muted: #77776f; --line: #2c2c2a; --accent: #ff5873; color-scheme: dark; }
+:root[data-theme="dark"] { --bg: #121212; --paper: #1a1a1a; --ink: #f1f1ee; --muted: #77776f; --line: #2c2c2a; --accent: #f1f1ee; color-scheme: dark; }
 
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 14px; -webkit-font-smoothing: antialiased; }
