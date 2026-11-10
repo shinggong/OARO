@@ -59,12 +59,9 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .main-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
 .main-head h2 { margin: 0; font-size: 22px; font-weight: 500; letter-spacing: -.01em; }
 .main-head h2 sup { font-size: 11px; font-weight: 400; margin-left: 2px; font-family: var(--mono); }
-.views { display: flex; gap: 20px; font-size: 22px; }
-.views button { color: var(--muted); font-weight: 500; }
-.views button[aria-pressed="true"] { color: var(--ink); }
 
 /* 그리드 */
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 28px 6px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 40px 20px; }
 .card { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .thumb { position: relative; aspect-ratio: 4 / 5; max-width: 100%; overflow: hidden; border-radius: 6px; display: grid; place-items: center; transition: transform .35s cubic-bezier(.2,.7,.2,1); }
 .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -79,16 +76,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .tags { display: flex; flex-wrap: wrap; gap: 4px; }
 .tag { font-family: var(--mono); font-size: 10px; padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); }
 .soon { position: absolute; top: 10px; right: 10px; font-family: var(--mono); font-size: 10px; padding: 3px 8px; border-radius: 999px; background: rgba(0,0,0,.55); color: #fff; }
-
-/* 리스트 보기 */
-.list { border-top: 1px solid var(--ink); }
-.row { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 16px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
-.row .thumb { aspect-ratio: 1; border-radius: 4px; }
-.row .poster-word { font-size: 18px; }
-.row .poster-meta, .row .soon { display: none; }
-.row:hover .card-title { color: var(--accent); }
-.row-tags { display: none; }
-@media (min-width: 720px) { .row { grid-template-columns: 80px minmax(0, 1.4fr) minmax(0, 1fr); } .row-tags { display: flex; } }
 
 .empty { padding: 60px 0; color: var(--muted); }
 .foot { margin-top: 72px; padding-top: 20px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-family: var(--mono); font-size: 11px; color: var(--muted); }
@@ -108,10 +95,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
     <main class="main">
       <div class="main-head">
         <h2 id="heading">Selected Works</h2>
-        <div class="views" role="group" aria-label="보기 방식">
-          <button id="v-grid" aria-pressed="true">Grid</button>
-          <button id="v-list" aria-pressed="false">List</button>
-        </div>
       </div>
       <div id="works"></div>
       <footer class="foot">
@@ -125,15 +108,15 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 <script>
 // 프로젝트 목록 — 새 사이트는 여기에 한 줄씩 추가 (img에 data URI를 넣으면 포스터 대신 사진이 보임)
 const PROJECTS = [
-  { title: "Pretty Girl", sub: "하트를 누르면 시작되는, 리센느와 함께하는 분홍빛 픽셀 하루", year: 2026, cats: ["interactive"], tags: ["Pixel", "Game"], img: "thumbs/pretty-girl.jpg",
-    url: "https://shinggong.github.io/pretty-girl/",
-    poster: { word: "Pretty<br>Girl", font: "'Rubik Bubbles'", bg: "linear-gradient(160deg,#ffb3d1,#b2507c)", fg: "#fff4fa", meta: ["Pixel RPG", "Vol.01"] } },
-  { title: "ON-REPEAT", sub: "말없이 노래만 듣고 싶은 날, 커서를 따라 눈 맞춰주는 친구", year: 2026, cats: ["3d", "interactive"], tags: ["3D", "Playlist"], img: "thumbs/on-repeat.jpg",
-    url: "https://shinggong.github.io/ON-REPEAT/",
-    poster: { word: "ON<br>RE<br>PEAT", font: "var(--display)", bg: "radial-gradient(circle at 50% 35%,#6a6a6a,#141414 72%)", fg: "#f4f4f0", meta: ["Playlist", "Track 01"], up: true } },
-  { title: "도깨비 빨래방", sub: "문 닫은 새벽, 아무도 없는 빨래방을 천천히 둘러보는 시간", year: 2026, cats: ["360", "interactive"], tags: ["Panorama", "360°"], img: "thumbs/goblin.jpg",
+  { title: "도깨비 빨래방", sub: "드래그로 둘러보고 물건을 눌러보는 360° 파노라마 빨래방", year: 2026, cats: ["360", "interactive"], tags: ["Panorama", "360°"], img: "thumbs/goblin.jpg",
     url: "https://shinggong.github.io/goblin-laundry/",
     poster: { word: "Goblin<br>Laundry", font: "'Rubik Bubbles'", bg: "linear-gradient(200deg,#d6ff4a,#2f8f5b)", fg: "#10240f", meta: ["360° Room", "Spin"] } },
+  { title: "Pretty Girl", sub: "방향키와 하트 버튼으로 플레이하는 리센느 팬 픽셀 게임", year: 2026, cats: ["interactive"], tags: ["Pixel", "Game"], img: "thumbs/pretty-girl.jpg",
+    url: "https://shinggong.github.io/pretty-girl/",
+    poster: { word: "Pretty<br>Girl", font: "'Rubik Bubbles'", bg: "linear-gradient(160deg,#ffb3d1,#b2507c)", fg: "#fff4fa", meta: ["Pixel RPG", "Vol.01"] } },
+  { title: "ON-REPEAT", sub: "커서를 따라 시선이 움직이는 3D 캐릭터와 유튜브 플레이리스트", year: 2026, cats: ["3d", "interactive"], tags: ["3D", "Playlist"], img: "thumbs/on-repeat.jpg",
+    url: "https://shinggong.github.io/ON-REPEAT/",
+    poster: { word: "ON<br>RE<br>PEAT", font: "var(--display)", bg: "radial-gradient(circle at 50% 35%,#6a6a6a,#141414 72%)", fg: "#f4f4f0", meta: ["Playlist", "Track 01"], up: true } },
 ];
 
 const CATS = [
@@ -143,8 +126,7 @@ const CATS = [
   { id: "interactive", label: "Interactive" },
 ];
 
-let cat = "all", view = "grid";
-try { view = localStorage.getItem("pf-view") || "grid"; } catch (e) {}
+let cat = "all";
 const h = location.hash.slice(1);
 if (CATS.some(c => c.id === h)) cat = h;
 
@@ -177,24 +159,15 @@ function render() {
 
   const label = CATS.find(c => c.id === cat).label;
   $("#heading").innerHTML = `${cat === "all" ? "Selected Works" : label}<sup>(${list.length})</sup>`;
-  $("#v-grid").setAttribute("aria-pressed", view === "grid");
-  $("#v-list").setAttribute("aria-pressed", view === "list");
 
   if (!list.length) { $("#works").innerHTML = '<p class="empty">이 카테고리엔 아직 작업이 없어요.</p>'; return; }
 
-  if (view === "grid") {
-    $("#works").innerHTML = `<div class="grid">${list.map(p => wrapLink(p, "card", `
+  $("#works").innerHTML = `<div class="grid">${list.map(p => wrapLink(p, "card", `
       ${thumb(p)}
       <div class="card-info">
         <div><div class="card-title">${p.title}</div><div class="card-sub">${p.sub}</div></div>
       </div>
       <div class="tags">${p.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div>`)).join("")}</div>`;
-  } else {
-    $("#works").innerHTML = `<div class="list">${list.map(p => wrapLink(p, "row", `
-      ${thumb(p)}
-      <div><div class="card-title">${p.title}</div><div class="card-sub">${p.sub}</div></div>
-      <div class="tags row-tags">${p.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div>`)).join("")}</div>`;
-  }
 }
 
 $("#cats").addEventListener("click", e => {
@@ -204,13 +177,6 @@ $("#cats").addEventListener("click", e => {
   try { history.replaceState(null, "", "#" + cat); } catch (e) {}
   render();
 });
-for (const v of ["grid", "list"]) {
-  $("#v-" + v).addEventListener("click", () => {
-    view = v;
-    try { localStorage.setItem("pf-view", v); } catch (e) {}
-    render();
-  });
-}
 render();
 </script>
 </body></html>
