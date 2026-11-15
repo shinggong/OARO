@@ -109,6 +109,9 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 <script>
 // 프로젝트 목록 — 새 사이트는 여기에 한 줄씩 추가 (img에 data URI를 넣으면 포스터 대신 사진이 보임)
 const PROJECTS = [
+  { title: "Crowd Gaze", sub: "커서를 따라 관중의 시선이 돌아가고, 스크롤하면 3D 테니스공이 경기장으로 날아가는 스토리", year: 2026, cats: ["3d", "interactive"], tags: ["Scroll", "WebGL"], img: "thumbs/crowd-gaze.jpg",
+    url: "https://shinggong.github.io/crowd-gaze/",
+    poster: { word: "Crowd<br>Gaze", font: "'Rubik Bubbles'", bg: "linear-gradient(180deg,#e48080,#333d28)", fg: "#f0e5ce", meta: ["Tennis", "Scroll"] } },
   { title: "시리얼 우유 편지", sub: "글자를 쓰면 우유 위에 시리얼 글자가 떠올랐다 가라앉는 3D 박스 인터랙티브", year: 2026, cats: ["3d", "interactive"], tags: ["WebGL", "3D"], img: "thumbs/cereal-milk.jpg",
     url: "https://shinggong.github.io/cereal-milk/",
     poster: { word: "Milk<br>Letters", font: "'Rubik Bubbles'", bg: "linear-gradient(180deg,#8fc3ee,#ffcedb)", fg: "#fdf8f2", meta: ["Cereal", "Type"] } },
