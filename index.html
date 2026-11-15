@@ -82,6 +82,13 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .foot { margin-top: 72px; padding-top: 20px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-family: var(--mono); font-size: 11px; color: var(--muted); }
 
 @media (prefers-reduced-motion: reduce) { .thumb { transition: none; } .card:hover .thumb { transform: none; } }
+
+/* 작품 뷰어: 페이지를 전체 화면으로 띄우고 왼쪽 위에 뒤로가기 */
+.viewer { position: fixed; inset: 0; z-index: 50; background: #000; }
+.viewer iframe { width: 100%; height: 100%; border: 0; display: block; background: #000; }
+.back { position: fixed; z-index: 51; top: calc(env(safe-area-inset-top, 0px) + 16px); left: calc(env(safe-area-inset-left, 0px) + 16px); display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px 0 12px; border-radius: 999px; background: rgba(0,0,0,.72); color: #fff; font-size: 14px; font-weight: 500; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.back:hover { background: #000; }
+.back svg { width: 18px; height: 18px; }
 </style>
 
 <div class="wrap">
@@ -104,6 +111,11 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
       </footer>
     </main>
   </div>
+</div>
+
+<div class="viewer" id="viewer" hidden>
+  <a class="back" id="back" href="#all" aria-label="목록으로 돌아가기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Back</a>
+  <iframe allow="autoplay; fullscreen; accelerometer; gyroscope; clipboard-write; encrypted-media; picture-in-picture"></iframe>
 </div>
 
 <script>
@@ -152,7 +164,7 @@ function thumb(p) {
 
 function wrapLink(p, cls, inner) {
   return p.url
-    ? `<a class="${cls}" href="${p.url}" target="_blank" rel="noopener">${inner}</a>`
+    ? `<a class="${cls}" href="${p.url}" data-view="${slug(p)}">${inner}</a>`
     : `<div class="${cls}">${inner}</div>`;
 }
 
@@ -184,6 +196,43 @@ $("#cats").addEventListener("click", e => {
   try { history.replaceState(null, "", "#" + cat); } catch (e) {}
   render();
 });
+// 작품 뷰어 — 주소 끝 #view-이름 으로 열리고, 뒤로가기(버튼·브라우저)로 닫힘
+const slug = p => p.url.replace(/\/+$/, "").split("/").pop().toLowerCase();
+const viewer = $("#viewer"), frame = $("#viewer iframe");
+const fromHash = () => { const m = location.hash.match(/^#view-(.+)$/); return m && PROJECTS.find(p => p.url && slug(p) === m[1]); };
+let openedHere = false;
+
+function syncViewer() {
+  const p = fromHash();
+  if (p) {
+    if (frame.getAttribute("src") !== p.url) frame.src = p.url;
+    frame.title = p.title;
+    viewer.hidden = false;
+    document.body.style.overflow = "hidden";
+  } else {
+    viewer.hidden = true;
+    frame.removeAttribute("src");
+    document.body.style.overflow = "";
+  }
+}
+
+$("#works").addEventListener("click", e => {
+  const a = e.target.closest("[data-view]");
+  if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+  e.preventDefault();
+  history.pushState(null, "", "#view-" + a.dataset.view);
+  openedHere = true;
+  syncViewer();
+});
+$("#back").addEventListener("click", e => {
+  e.preventDefault();
+  if (openedHere) { openedHere = false; history.back(); return; }
+  history.replaceState(null, "", "#" + cat);
+  syncViewer();
+});
+window.addEventListener("popstate", () => { openedHere = !!fromHash() && openedHere; syncViewer(); });
+
 render();
+syncViewer();
 </script>
 </body></html>
