@@ -89,6 +89,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .back { position: fixed; z-index: 51; top: calc(env(safe-area-inset-top, 0px) + 16px); left: calc(env(safe-area-inset-left, 0px) + 16px); display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px 0 12px; border-radius: 999px; background: rgba(0,0,0,.72); color: #fff; font-size: 14px; font-weight: 500; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 .back:hover { background: #000; }
 .back svg { width: 18px; height: 18px; }
+/* 왼쪽 위에 자기 버튼이 있는 작품은 오른쪽 위 작은 닫기(X)로 — 작품 버튼(위에서 44px부터)과 안 겹치게 높이 32px */
+.back.right { left: auto; right: calc(env(safe-area-inset-right, 0px) + 8px); top: calc(env(safe-area-inset-top, 0px) + 8px); width: 32px; height: 32px; padding: 0; justify-content: center; }
+.back .x, .back.right .chev, .back.right .label { display: none; }
+.back.right .x { display: block; }
 </style>
 
 <div class="wrap">
@@ -114,7 +118,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 </div>
 
 <div class="viewer" id="viewer" hidden>
-  <a class="back" id="back" href="#all" aria-label="목록으로 돌아가기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Back</a>
+  <a class="back" id="back" href="#all" aria-label="목록으로 돌아가기"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><svg class="x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span class="label">Back</span></a>
 </div>
 
 <script>
@@ -126,7 +130,7 @@ const PROJECTS = [
   { title: "시리얼 우유 편지", sub: "글자를 쓰면 우유 위에 시리얼 글자가 떠올랐다 가라앉는 3D 박스 인터랙티브", year: 2026, cats: ["3d", "interactive"], tags: ["WebGL", "3D"], img: "thumbs/cereal-milk.jpg",
     url: "https://shinggong.github.io/cereal-milk/",
     poster: { word: "Milk<br>Letters", font: "'Rubik Bubbles'", bg: "linear-gradient(180deg,#8fc3ee,#ffcedb)", fg: "#fdf8f2", meta: ["Cereal", "Type"] } },
-  { title: "도깨비 빨래방", sub: "드래그로 둘러보고 물건을 눌러보는 360° 파노라마 빨래방", year: 2026, cats: ["360"], tags: ["Panorama", "360°"], img: "thumbs/goblin.jpg",
+  { title: "도깨비 빨래방", sub: "드래그로 둘러보고 물건을 눌러보는 360° 파노라마 빨래방", year: 2026, cats: ["360"], tags: ["Panorama", "360°"], img: "thumbs/goblin.jpg", closeRight: true,
     url: "https://shinggong.github.io/goblin-laundry/",
     poster: { word: "Goblin<br>Laundry", font: "'Rubik Bubbles'", bg: "linear-gradient(200deg,#d6ff4a,#2f8f5b)", fg: "#10240f", meta: ["360° Room", "Spin"] } },
   { title: "Pretty Girl", sub: "리센느 멤버들의 방을 구경하는 레트로 픽셀 인터랙티브", year: 2026, cats: ["interactive"], tags: ["Pixel", "Retro"], img: "thumbs/pretty-girl.jpg",
@@ -215,6 +219,7 @@ function syncViewer() {
       frame.src = p.url;
       viewer.appendChild(frame);
     }
+    $("#back").classList.toggle("right", !!p.closeRight);
     viewer.hidden = false;
     document.body.style.overflow = "hidden";
   } else {
