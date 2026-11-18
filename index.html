@@ -89,7 +89,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .back { position: fixed; z-index: 51; top: calc(env(safe-area-inset-top, 0px) + 16px); left: calc(env(safe-area-inset-left, 0px) + 16px); display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px 0 12px; border-radius: 999px; background: rgba(0,0,0,.72); color: #fff; font-size: 14px; font-weight: 500; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 .back:hover { background: #000; }
 .back svg { width: 18px; height: 18px; }
-/* 왼쪽 위에 자기 버튼이 있는 작품은 오른쪽 위 작은 닫기(X)로 — 작품 버튼(위에서 44px부터)과 안 겹치게 높이 32px */
+/* 빨래방 안쪽 화면(자기 BACK이 왼쪽 위에 뜰 때)만 오른쪽 위 작은 닫기(X)로 — 작품 버튼(위에서 44px부터)과 안 겹치게 높이 32px */
 .back.right { left: auto; right: calc(env(safe-area-inset-right, 0px) + 8px); top: calc(env(safe-area-inset-top, 0px) + 8px); width: 32px; height: 32px; padding: 0; justify-content: center; }
 .back .x, .back.right .chev, .back.right .label { display: none; }
 .back.right .x { display: block; }
@@ -207,6 +207,27 @@ let frame = null;
 const fromHash = () => { const m = location.hash.match(/^#view-(.+)$/); return m && PROJECTS.find(p => p.url && slug(p) === m[1]); };
 let openedHere = false;
 
+// 빨래방은 같은 주소(shinggong.github.io)라 안을 들여다볼 수 있음:
+// 안쪽 화면(#panel)이 열리면 오른쪽 X, 게시판·장바구니 같은 팝업이 뜨면 잠깐 숨김
+let depthTimer = null;
+function watchDepth(p) {
+  const btn = $("#back");
+  clearInterval(depthTimer);
+  btn.classList.remove("right"); btn.hidden = false;
+  if (!p || !p.closeRight) return;
+  depthTimer = setInterval(() => {
+    let deep = false, modal = false;
+    try {
+      const d = frame && frame.contentDocument;
+      const panel = d && d.getElementById("panel");
+      deep = !!panel && !panel.hidden;
+      modal = !!d && !!d.querySelector("#board.on, #ct.co");
+    } catch (e) {}
+    btn.classList.toggle("right", deep);
+    btn.hidden = modal;
+  }, 200);
+}
+
 function syncViewer() {
   const p = fromHash();
   if (p) {
@@ -219,11 +240,12 @@ function syncViewer() {
       frame.src = p.url;
       viewer.appendChild(frame);
     }
-    $("#back").classList.toggle("right", !!p.closeRight);
+    watchDepth(p);
     viewer.hidden = false;
     document.body.style.overflow = "hidden";
   } else {
     viewer.hidden = true;
+    watchDepth(null);
     if (frame) { frame.remove(); frame = null; }
     document.body.style.overflow = "";
   }
