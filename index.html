@@ -83,16 +83,9 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 @media (prefers-reduced-motion: reduce) { .thumb { transition: none; } .card:hover .thumb { transform: none; } }
 
-/* 작품 뷰어: 페이지를 전체 화면으로 띄우고 왼쪽 위에 뒤로가기 */
+/* 작품 뷰어: 페이지를 전체 화면으로 띄우고 브라우저 뒤로가기로 닫음 */
 .viewer { position: fixed; inset: 0; z-index: 50; background: #000; }
 .viewer iframe { width: 100%; height: 100%; border: 0; display: block; background: #000; }
-.back { position: fixed; z-index: 51; top: calc(env(safe-area-inset-top, 0px) + 16px); left: calc(env(safe-area-inset-left, 0px) + 16px); display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px 0 12px; border-radius: 999px; background: rgba(0,0,0,.72); color: #fff; font-size: 14px; font-weight: 500; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
-.back:hover { background: #000; }
-.back svg { width: 18px; height: 18px; }
-/* 빨래방 안쪽 화면(자기 BACK이 왼쪽 위에 뜰 때)만 오른쪽 위 작은 닫기(X)로 — 작품 버튼(위에서 44px부터)과 안 겹치게 높이 32px */
-.back.right { left: auto; right: calc(env(safe-area-inset-right, 0px) + 8px); top: calc(env(safe-area-inset-top, 0px) + 8px); width: 32px; height: 32px; padding: 0; justify-content: center; }
-.back .x, .back.right .chev, .back.right .label { display: none; }
-.back.right .x { display: block; }
 </style>
 
 <div class="wrap">
@@ -118,7 +111,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 </div>
 
 <div class="viewer" id="viewer" hidden>
-  <a class="back" id="back" href="#all" aria-label="목록으로 돌아가기"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><svg class="x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span class="label">Back</span></a>
 </div>
 
 <script>
@@ -130,7 +122,7 @@ const PROJECTS = [
   { title: "시리얼 우유 편지", sub: "글자를 쓰면 우유 위에 시리얼 글자가 떠올랐다 가라앉는 3D 박스 인터랙티브", year: 2026, cats: ["3d"], tags: ["WebGL", "3D"], img: "thumbs/cereal-milk.jpg",
     url: "https://shinggong.github.io/cereal-milk/",
     poster: { word: "Milk<br>Letters", font: "'Rubik Bubbles'", bg: "linear-gradient(180deg,#8fc3ee,#ffcedb)", fg: "#fdf8f2", meta: ["Cereal", "Type"] } },
-  { title: "LAUNDRY CLUB", sub: "드래그로 둘러보고 물건을 눌러보는 360° 파노라마 빨래방", year: 2026, cats: ["360"], tags: ["Panorama", "360°"], img: "thumbs/goblin.jpg", closeRight: true,
+  { title: "LAUNDRY CLUB", sub: "드래그로 둘러보고 물건을 눌러보는 360° 파노라마 빨래방", year: 2026, cats: ["360"], tags: ["Panorama", "360°"], img: "thumbs/goblin.jpg",
     url: "https://shinggong.github.io/goblin-laundry/",
     poster: { word: "Goblin<br>Laundry", font: "'Rubik Bubbles'", bg: "linear-gradient(200deg,#d6ff4a,#2f8f5b)", fg: "#10240f", meta: ["360° Room", "Spin"] } },
   { title: "Pretty Girl", sub: "리센느 멤버들의 방을 구경하는 레트로 픽셀 인터랙티브", year: 2026, cats: ["interactive"], tags: ["Pixel", "Retro"], img: "thumbs/pretty-girl.jpg",
@@ -199,34 +191,12 @@ $("#cats").addEventListener("click", e => {
   try { history.replaceState(null, "", "#" + cat); } catch (e) {}
   render();
 });
-// 작품 뷰어 — 주소 끝 #view-이름 으로 열리고, 뒤로가기(버튼·브라우저)로 닫힘
+// 작품 뷰어 — 주소 끝 #view-이름 으로 열리고, 브라우저 뒤로가기로 닫힘
 const slug = p => p.url.replace(/\/+$/, "").split("/").pop().toLowerCase();
 const viewer = $("#viewer");
 // iframe은 열 때마다 새로 만들고 닫을 때 지움 — 안 그러면 iframe 안의 이동이 브라우저 기록에 쌓여 뒤로가기가 한 번 더 필요해짐
 let frame = null;
 const fromHash = () => { const m = location.hash.match(/^#view-(.+)$/); return m && PROJECTS.find(p => p.url && slug(p) === m[1]); };
-let openedHere = false;
-
-// 빨래방은 같은 주소(shinggong.github.io)라 안을 들여다볼 수 있음:
-// 안쪽 화면(#panel)이 열리면 오른쪽 X, 게시판·장바구니 같은 팝업이 뜨면 잠깐 숨김
-let depthTimer = null;
-function watchDepth(p) {
-  const btn = $("#back");
-  clearInterval(depthTimer);
-  btn.classList.remove("right"); btn.hidden = false;
-  if (!p || !p.closeRight) return;
-  depthTimer = setInterval(() => {
-    let deep = false, modal = false;
-    try {
-      const d = frame && frame.contentDocument;
-      const panel = d && d.getElementById("panel");
-      deep = !!panel && !panel.hidden;
-      modal = !!d && !!d.querySelector("#board.on, #ct.co");
-    } catch (e) {}
-    btn.classList.toggle("right", deep);
-    btn.hidden = modal;
-  }, 200);
-}
 
 function syncViewer() {
   const p = fromHash();
@@ -240,12 +210,10 @@ function syncViewer() {
       frame.src = p.url;
       viewer.appendChild(frame);
     }
-    watchDepth(p);
     viewer.hidden = false;
     document.body.style.overflow = "hidden";
   } else {
     viewer.hidden = true;
-    watchDepth(null);
     if (frame) { frame.remove(); frame = null; }
     document.body.style.overflow = "";
   }
@@ -256,17 +224,9 @@ $("#works").addEventListener("click", e => {
   if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
   e.preventDefault();
   history.pushState(null, "", "#view-" + a.dataset.view);
-  openedHere = true;
   syncViewer();
 });
-$("#back").addEventListener("click", e => {
-  e.preventDefault();
-  if (frame) { frame.remove(); frame = null; }
-  if (openedHere) { openedHere = false; history.back(); return; }
-  history.replaceState(null, "", "#" + cat);
-  syncViewer();
-});
-window.addEventListener("popstate", () => { openedHere = !!fromHash() && openedHere; syncViewer(); });
+window.addEventListener("popstate", syncViewer);
 
 render();
 syncViewer();
