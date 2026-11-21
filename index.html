@@ -116,6 +116,9 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 <script>
 // 프로젝트 목록 — 새 사이트는 여기에 한 줄씩 추가 (img에 data URI를 넣으면 포스터 대신 사진이 보임)
 const PROJECTS = [
+  { title: "Paradise", sub: "스크롤하면 모래언덕 아래 초원 안으로 걸어 들어가고, 마우스로 평면↔입체·시점을 바꾸는 3D 들판", year: 2026, cats: ["3d"], tags: ["Scroll", "3D"], img: "thumbs/paradise.jpg",
+    url: "https://shinggong.github.io/paradise/",
+    poster: { word: "Para<br>dise", font: "'Rubik Bubbles'", bg: "linear-gradient(180deg,#7fb3cc,#7caa47)", fg: "#fffdf4", meta: ["Meadow", "Scroll"] } },
   { title: "달빛 소원 분수", sub: "소원을 적은 동전을 분수에 던지는 밤의 3D 광장. 꼬마와 걷고, 벤치에 앉고, 별똥별을 기다려요", year: 2026, cats: ["3d"], tags: ["WebGL", "3D"], img: "thumbs/wish-fountain.jpg",
     url: "https://wish-fountain-xi.vercel.app/",
     poster: { word: "Wish<br>Fountain", font: "'Rubik Bubbles'", bg: "linear-gradient(180deg,#1b1838,#5a4a7a)", fg: "#f3e7c2", meta: ["Coin", "Night"] } },
